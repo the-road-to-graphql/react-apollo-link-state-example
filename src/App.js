@@ -4,15 +4,17 @@ import { Query, Mutation } from 'react-apollo';
 
 import './App.css';
 
+// Remote Query
 const GET_REPOSITORIES_OF_ORGANIZATION = gql`
   {
     organization(login: "the-road-to-learn-react") {
-      repositories(first: 10) {
+      repositories(first: 20) {
         edges {
           node {
             id
             name
             url
+            viewerHasStarred
           }
         }
       }
@@ -20,15 +22,30 @@ const GET_REPOSITORIES_OF_ORGANIZATION = gql`
   }
 `;
 
-const SELECT_REPOSITORY = gql`
-  mutation($id: String!, $isSelected: Boolean!) {
-    toggleSelectRepository(id: $id, isSelected: $isSelected) @client
-  }
-`;
-
+// Local Query
+// exported to be used in resolver to read this particular data from cache
 export const GET_SELECTED_REPOSITORIES = gql`
   query {
     selectedRepositoryIds @client
+  }
+`;
+
+// Remote Mutation
+const STAR_REPOSITORY = gql`
+  mutation($id: ID!) {
+    addStar(input: { starrableId: $id }) {
+      starrable {
+        id
+        viewerHasStarred
+      }
+    }
+  }
+`;
+
+// Local Mutation
+const SELECT_REPOSITORY = gql`
+  mutation($id: ID!, $isSelected: Boolean!) {
+    toggleSelectRepository(id: $id, isSelected: $isSelected) @client
   }
 `;
 
@@ -70,8 +87,9 @@ const RepositoryList = ({ repositories, selectedRepositoryIds }) => (
 
       return (
         <li className={rowClassName.join(' ')} key={node.id}>
-          <Select id={node.id} isSelected={isSelected} />
-          <a href={node.url}>{node.name}</a>
+          <Select id={node.id} isSelected={isSelected} />{' '}
+          <a href={node.url}>{node.name}</a>{' '}
+          {!node.viewerHasStarred && <Star id={node.id} />}
         </li>
       );
     })}
@@ -87,7 +105,19 @@ const Select = ({ id, isSelected }) => (
       <Fragment>
         <button type="button" onClick={toggleSelectRepository}>
           {isSelected ? 'Unselect' : 'Select'}
-        </button>{' '}
+        </button>
+      </Fragment>
+    )}
+  </Mutation>
+);
+
+const Star = ({ id }) => (
+  <Mutation mutation={STAR_REPOSITORY} variables={{ id }}>
+    {starRepository => (
+      <Fragment>
+        <button type="button" onClick={starRepository}>
+          Star
+        </button>
       </Fragment>
     )}
   </Mutation>
