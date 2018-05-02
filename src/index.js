@@ -42,7 +42,10 @@ const toggleSelectRepository = (_, { id, isSelected }, { cache }) => {
     data: { selectedRepositoryIds },
   });
 
-  return null;
+  // mutation result if needed
+  // otherwise return null if not needed
+  // in this case: not used, because mutation result is not used in Mutation component
+  return { id, isSelected: !isSelected };
 };
 
 const stateLink = withClientState({
