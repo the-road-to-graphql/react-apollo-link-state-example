@@ -4,11 +4,14 @@ import { ApolloProvider } from 'react-apollo';
 import { ApolloClient } from 'apollo-client';
 import { ApolloLink } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http';
-import { onError } from 'apollo-link-error';
+import { withClientState } from 'apollo-link-state';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
-import App from './App';
+import App, { GET_SELECTED_REPOSITORIES } from './App';
+
 import registerServiceWorker from './registerServiceWorker';
+
+const cache = new InMemoryCache();
 
 const GITHUB_BASE_URL = 'https://api.github.com/graphql';
 
@@ -21,19 +24,38 @@ const httpLink = new HttpLink({
   },
 });
 
-const errorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors) {
-    // do something with graphql error
-  }
+const initialState = {
+  selectedRepositoryIds: [],
+};
 
-  if (networkError) {
-    // do something with network error
-  }
+const toggleSelectRepository = (_, { id, isSelected }, { cache }) => {
+  let { selectedRepositoryIds } = cache.readQuery({
+    query: GET_SELECTED_REPOSITORIES,
+  });
+
+  selectedRepositoryIds = isSelected
+    ? selectedRepositoryIds.filter(itemId => itemId !== id)
+    : selectedRepositoryIds.concat(id);
+
+  cache.writeQuery({
+    query: GET_SELECTED_REPOSITORIES,
+    data: { selectedRepositoryIds },
+  });
+
+  return null;
+};
+
+const stateLink = withClientState({
+  cache,
+  defaults: initialState,
+  resolvers: {
+    Mutation: {
+      toggleSelectRepository,
+    },
+  },
 });
 
-const link = ApolloLink.from([errorLink, httpLink]);
-
-const cache = new InMemoryCache();
+const link = ApolloLink.from([stateLink, httpLink]);
 
 const client = new ApolloClient({
   link,

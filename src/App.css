@@ -7,5 +7,9 @@
 }
 
 .row_selected {
-  background-color: blue;
+  background-color: orange;
+}
+
+.row_selected:hover {
+  background-color: orange;
 }
