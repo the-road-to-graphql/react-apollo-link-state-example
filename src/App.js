@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import gql from 'graphql-tag';
 import { Query, Mutation } from 'react-apollo';
 
@@ -102,11 +102,9 @@ const Select = ({ id, isSelected }) => (
     variables={{ id, isSelected }}
   >
     {toggleSelectRepository => (
-      <Fragment>
-        <button type="button" onClick={toggleSelectRepository}>
-          {isSelected ? 'Unselect' : 'Select'}
-        </button>
-      </Fragment>
+      <button type="button" onClick={toggleSelectRepository}>
+        {isSelected ? 'Unselect' : 'Select'}
+      </button>
     )}
   </Mutation>
 );
@@ -114,11 +112,9 @@ const Select = ({ id, isSelected }) => (
 const Star = ({ id }) => (
   <Mutation mutation={STAR_REPOSITORY} variables={{ id }}>
     {starRepository => (
-      <Fragment>
-        <button type="button" onClick={starRepository}>
-          Star
-        </button>
-      </Fragment>
+      <button type="button" onClick={starRepository}>
+        Star
+      </button>
     )}
   </Mutation>
 );
