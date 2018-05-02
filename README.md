@@ -1,11 +1,11 @@
-# react-redux-apollo-link-state-example
+# react-apollo-link-state-example
 
-A React application using Apollo Client and Redux with [apollo-link-state](https://www.apollographql.com/docs/link/links/state.html). While Redux is used to capture the selected items, Apollo Client is used to to execute a batch mutation on those selected items.
+A React application using Apollo Client with [apollo-link-state](https://www.apollographql.com/docs/link/links/state.html) for local state management. While apollo-link-state is used to manage selected items in a list as local data, the remaining queries and mutations are used for remote data.
 
 ## Installation
 
-* `git clone git@github.com:rwieruch/react-redux-apollo-link-state-example.git`
-* cd react-redux-apollo-link-state-example
+* `git clone git@github.com:rwieruch/react-apollo-link-state-example.git`
+* cd react-apollo-link-state-example
 * npm install
 * [add your own REACT_APP_GITHUB_PERSONAL_ACCESS_TOKEN in .env file](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)
   * scopes/permissions you need to check: admin:org, repo, user, notifications
