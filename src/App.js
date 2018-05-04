@@ -23,7 +23,7 @@ const GET_REPOSITORIES_OF_ORGANIZATION = gql`
 `;
 
 // Local Query
-// exported to be used in resolver to read this particular data from cache
+// exported to be used in a mutation resolver to read this particular data from cache
 export const GET_SELECTED_REPOSITORIES = gql`
   query {
     selectedRepositoryIds @client
@@ -45,7 +45,10 @@ const STAR_REPOSITORY = gql`
 // Local Mutation
 const SELECT_REPOSITORY = gql`
   mutation($id: ID!, $isSelected: Boolean!) {
-    toggleSelectRepository(id: $id, isSelected: $isSelected) @client
+    toggleSelectRepository(id: $id, isSelected: $isSelected) @client {
+      id
+      isSelected
+    }
   }
 `;
 
@@ -96,24 +99,24 @@ const RepositoryList = ({ repositories, selectedRepositoryIds }) => (
   </ul>
 );
 
-const Select = ({ id, isSelected }) => (
-  <Mutation
-    mutation={SELECT_REPOSITORY}
-    variables={{ id, isSelected }}
-  >
-    {toggleSelectRepository => (
-      <button type="button" onClick={toggleSelectRepository}>
-        {isSelected ? 'Unselect' : 'Select'}
-      </button>
-    )}
-  </Mutation>
-);
-
 const Star = ({ id }) => (
   <Mutation mutation={STAR_REPOSITORY} variables={{ id }}>
     {starRepository => (
       <button type="button" onClick={starRepository}>
         Star
+      </button>
+    )}
+  </Mutation>
+);
+
+const Select = ({ id, isSelected }) => (
+  <Mutation
+    mutation={SELECT_REPOSITORY}
+    variables={{ id, isSelected }}
+  >
+    {(toggleSelectRepository, result) => (
+      <button type="button" onClick={toggleSelectRepository}>
+        {isSelected ? 'Unselect' : 'Select'}
       </button>
     )}
   </Mutation>
